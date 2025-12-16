@@ -1,0 +1,264 @@
+import React, { useState } from 'react';
+import { Calendar, Check, ChevronRight, Clock, Shield, Sparkles, Droplet, Wind } from 'lucide-react';
+
+// 模擬 Logo 引用 (請將你的 Logo 檔案命名為 tds-logo.jpg 並放在 public 資料夾)
+const Logo = () => (
+  <div className="flex justify-center mb-8">
+    <img 
+      src="/TDS Logo.jpg" 
+      alt="TDS Logo" 
+      className="w-32 h-32 object-contain rounded-full border-2 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+    />
+  </div>
+);
+
+export default function TDSBookingSystem() {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    serviceType: [],
+    addons: [],
+    carType: '',
+    date: '',
+    time: '',
+    name: ''
+  });
+
+  // 選項資料配置
+  const services = [
+    { id: 'wash', name: '精緻洗車', icon: <Droplet className="w-6 h-6"/>, desc: '基礎外觀與內裝清潔' },
+    { id: 'coating', name: '專業鍍膜', icon: <Shield className="w-6 h-6"/>, desc: '漆面保護與增艷' },
+    { id: 'leather', name: '皮革保養', icon: <Sparkles className="w-6 h-6"/>, desc: '內裝滋潤與修復' },
+    { id: 'deep_clean', name: '深度清潔', icon: <Wind className="w-6 h-6"/>, desc: '除異味、蒸氣殺菌' },
+  ];
+
+  const addons = [
+    { id: 'ac_clean', name: '冷氣管路清潔' },
+    { id: 'wiper', name: '雨刷更換' },
+    { id: 'coating_maintain', name: '鍍膜定期維護' },
+  ];
+
+  const carTypes = ['小型房車 (Sedan)', '休旅車 (SUV)', '跑車 (Coupe)', '大型休旅/MPV', '機車 (Motorcycle)'];
+
+  // 處理選擇邏輯
+  const toggleSelection = (category, item) => {
+    setFormData(prev => {
+      const list = prev[category];
+      if (list.includes(item)) {
+        return { ...prev, [category]: list.filter(i => i !== item) };
+      }
+      return { ...prev, [category]: [...list, item] };
+    });
+  };
+
+  const handleNext = () => setStep(prev => prev + 1);
+  const handleBack = () => setStep(prev => prev - 1);
+
+  // 最終送出到 LINE
+  const handleLineSubmit = () => {
+    const message = `
+【TDS 預約諮詢單】
+👤 顧客：${formData.name || '未填寫'}
+🚗 車型：${formData.carType}
+📅 日期：${formData.date} ${formData.time}
+🛠 服務項目：${formData.serviceType.join(', ')}
+➕ 附加服務：${formData.addons.length > 0 ? formData.addons.join(', ') : '無'}
+-----------------------
+請問此時段是否可以預約？
+    `.trim();
+
+    // 複製到剪貼簿並開啟 LINE
+    navigator.clipboard.writeText(message).then(() => {
+      alert("預約資訊已複製！將為您開啟 LINE，請直接貼上發送即可。");
+      window.location.href = "https://line.me/ti/p/@794xqwdg"; // LINE ID 連結
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-white selection:text-black">
+      <div className="max-w-2xl mx-auto px-6 py-12">
+        
+        {/* Header Section */}
+        <Logo />
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold tracking-wider mb-2">TDS (The Detail Studio)</h1>
+          <p className="text-gray-400 text-sm tracking-widest uppercase">專業車體美容・鍍膜諮詢</p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="flex justify-between mb-8 relative">
+          <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-800 -z-10"></div>
+          {[1, 2, 3].map((s) => (
+            <div key={s} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${step >= s ? 'bg-white text-black' : 'bg-gray-800 text-gray-500'}`}>
+              {s}
+            </div>
+          ))}
+        </div>
+
+        {/* Step 1: 服務選擇 */}
+        {step === 1 && (
+          <div className="space-y-6 animate-fade-in-up">
+            <h2 className="text-xl font-semibold border-l-4 border-white pl-3">選擇服務項目 (可複選)</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {services.map((service) => (
+                <div 
+                  key={service.id}
+                  onClick={() => toggleSelection('serviceType', service.name)}
+                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-300 flex items-center gap-4 group
+                    ${formData.serviceType.includes(service.name) 
+                      ? 'border-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.2)]' 
+                      : 'border-gray-700 hover:border-gray-500 bg-[#1a1a1a]'}`}
+                >
+                  <div className={`p-2 rounded-lg ${formData.serviceType.includes(service.name) ? 'bg-white text-black' : 'bg-gray-800 text-gray-400'}`}>
+                    {service.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{service.name}</h3>
+                    <p className="text-xs text-gray-400">{service.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-sm text-gray-400 mb-3 uppercase tracking-wider">附加選項 Add-ons</h3>
+              <div className="flex flex-wrap gap-3">
+                {addons.map((addon) => (
+                  <button
+                    key={addon.id}
+                    onClick={() => toggleSelection('addons', addon.name)}
+                    className={`px-4 py-2 rounded-full text-sm border transition-all
+                      ${formData.addons.includes(addon.name)
+                        ? 'bg-white text-black border-white'
+                        : 'bg-transparent text-gray-400 border-gray-700 hover:border-gray-500'}`}
+                  >
+                    {addon.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button 
+              onClick={handleNext}
+              disabled={formData.serviceType.length === 0}
+              className="w-full mt-8 bg-white text-black py-4 rounded-lg font-bold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              下一步：選擇車型與時間 <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Step 2: 車型與時間 */}
+        {step === 2 && (
+          <div className="space-y-6 animate-fade-in-up">
+            <h2 className="text-xl font-semibold border-l-4 border-white pl-3">車型與預約時間</h2>
+
+            <div className="space-y-4">
+              <label className="block text-gray-400 text-sm">您的愛車種類</label>
+              <div className="grid grid-cols-2 gap-3">
+                {carTypes.map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setFormData({...formData, carType: type})}
+                    className={`p-3 text-sm rounded-lg border text-left transition-all
+                      ${formData.carType === type 
+                        ? 'border-white bg-white/10 text-white' 
+                        : 'border-gray-700 text-gray-500 hover:border-gray-500'}`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">預約日期</label>
+                <input 
+                  type="date" 
+                  className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-white focus:border-white outline-none"
+                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">偏好時段</label>
+                <select 
+                  className="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-3 text-white focus:border-white outline-none"
+                  onChange={(e) => setFormData({...formData, time: e.target.value})}
+                >
+                  <option value="">請選擇</option>
+                  <option value="上午 (10:00 - 12:00)">上午 (10:00 - 12:00)</option>
+                  <option value="下午 (13:00 - 17:00)">下午 (13:00 - 17:00)</option>
+                  <option value="晚上 (18:00 - 20:00)">晚上 (18:00 - 20:00)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="pt-4 flex gap-4">
+              <button onClick={handleBack} className="w-1/3 py-4 rounded-lg border border-gray-700 text-gray-400 hover:text-white">回上一步</button>
+              <button 
+                onClick={handleNext}
+                disabled={!formData.carType || !formData.date || !formData.time}
+                className="w-2/3 bg-white text-black py-4 rounded-lg font-bold hover:bg-gray-200 disabled:opacity-50"
+              >
+                下一步：確認資訊
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: 確認並送出 */}
+        {step === 3 && (
+          <div className="space-y-6 animate-fade-in-up">
+            <h2 className="text-xl font-semibold border-l-4 border-white pl-3">預約單確認</h2>
+            
+            <div className="bg-[#1a1a1a] p-6 rounded-xl border border-gray-800 space-y-4">
+              <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+                <span className="text-gray-400">車型</span>
+                <span className="font-bold text-lg">{formData.carType}</span>
+              </div>
+              <div className="flex justify-between items-center border-b border-gray-800 pb-4">
+                <span className="text-gray-400">時間</span>
+                <span className="font-bold">{formData.date} / {formData.time}</span>
+              </div>
+              <div>
+                <span className="text-gray-400 block mb-2">服務項目</span>
+                <div className="flex flex-wrap gap-2">
+                  {formData.serviceType.map(s => <span key={s} className="bg-white/10 px-2 py-1 rounded text-sm text-white">{s}</span>)}
+                  {formData.addons.map(a => <span key={a} className="bg-blue-500/20 px-2 py-1 rounded text-sm text-blue-300">{a}</span>)}
+                </div>
+              </div>
+              
+              <div className="pt-2">
+                 <label className="block text-gray-400 text-sm mb-2">您的稱呼 (選填)</label>
+                 <input 
+                  type="text" 
+                  placeholder="例如：陳先生"
+                  className="w-full bg-black border border-gray-700 rounded-lg p-3 text-white focus:border-white outline-none"
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="bg-green-900/20 border border-green-800 p-4 rounded-lg text-sm text-green-400 flex gap-3">
+              <div className="mt-1">💡</div>
+              <p>點擊下方按鈕後，系統將自動複製您的預約單，並導向 TDS 官方 LINE。請在 LINE 對話框選擇「貼上」即可完成諮詢。</p>
+            </div>
+
+            <div className="flex gap-4">
+               <button onClick={handleBack} className="w-1/3 py-4 rounded-lg border border-gray-700 text-gray-400 hover:text-white">修改資訊</button>
+               <button 
+                onClick={handleLineSubmit}
+                className="w-2/3 bg-[#00B900] text-white py-4 rounded-lg font-bold hover:bg-[#009900] transition-colors shadow-[0_0_20px_rgba(0,185,0,0.3)] flex justify-center items-center gap-2"
+              >
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" className="w-6 h-6" alt="LINE" />
+                聯繫 LINE 預約
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
