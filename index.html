@@ -53,7 +53,6 @@
             </div>
         );
 
-        // 翻譯字典 (UI 文字)
         const translations = {
             zh: {
                 subtitle: '專業車體美容・鍍膜諮詢',
@@ -78,12 +77,6 @@
                 tip: '按下按鈕後將開啟 LINE，系統已幫您輸入好中英對照內容，請直接按下「傳送」即可。',
                 btnModify: '修改',
                 btnSubmit: '聯繫 LINE 預約',
-                serviceDesc: {
-                    wash: '基礎外觀與內裝清潔',
-                    coating: '漆面保護與增艷',
-                    leather: '內裝滋潤與修復',
-                    deep_clean: '除異味、蒸氣殺菌'
-                }
             },
             en: {
                 subtitle: 'Professional Auto Detailing & Coating',
@@ -108,22 +101,16 @@
                 tip: 'Pressing the button will open LINE with a bilingual message pre-filled. Just press "Send".',
                 btnModify: 'Edit',
                 btnSubmit: 'Book via LINE',
-                serviceDesc: {
-                    wash: 'Exterior & Interior Cleaning',
-                    coating: 'Paint Protection & Gloss',
-                    leather: 'Interior Conditioning',
-                    deep_clean: 'Odor Removal & Steam'
-                }
             }
         };
 
         function TDSBookingSystem() {
-            const [lang, setLang] = useState('zh'); // 預設中文 'zh' 或 'en'
+            const [lang, setLang] = useState('zh'); 
             const [step, setStep] = useState(1);
             const [formData, setFormData] = useState({
-                serviceType: [], // 存 id
-                addons: [],      // 存 id
-                carType: '',     // 存 id
+                serviceType: [],
+                addons: [],
+                carType: '',
                 date: '',
                 time: '',
                 name: ''
@@ -131,12 +118,36 @@
 
             const t = translations[lang];
 
-            // 資料結構包含中英雙語
-            const services = [
-                { id: 'wash', nameZh: '精緻洗車', nameEn: 'Exquisite Wash', icon: '💧', descZh: '基礎外觀與內裝清潔', descEn: 'Exterior & Interior Cleaning' },
-                { id: 'coating', nameZh: '專業鍍膜', nameEn: 'Professional Coating', icon: '🛡️', descZh: '漆面保護與增艷', descEn: 'Paint Protection & Gloss' },
-                { id: 'leather', nameZh: '皮革保養', nameEn: 'Leather Care', icon: '✨', descZh: '內裝滋潤與修復', descEn: 'Interior Conditioning' },
-                { id: 'deep_clean', nameZh: '深度清潔', nameEn: 'Deep Cleaning', icon: '💨', descZh: '除異味、蒸氣殺菌', descEn: 'Odor Removal & Steam' },
+            // 🔥 新增：分組的服務項目結構
+            const serviceGroups = [
+                {
+                    titleZh: '基礎清潔與護理',
+                    titleEn: 'Basic Cleaning & Care',
+                    items: [
+                        { id: 'wash', nameZh: '精緻洗車', nameEn: 'Exquisite Wash', descZh: '外觀與內裝清潔', descEn: 'Exterior & Interior' },
+                        { id: 'leather', nameZh: '皮革保養', nameEn: 'Leather Care', descZh: '內裝滋潤與修復', descEn: 'Interior Conditioning' },
+                        { id: 'deep_clean', nameZh: '深度清潔', nameEn: 'Deep Cleaning', descZh: '除異味、蒸氣殺菌', descEn: 'Odor Removal & Steam' },
+                    ]
+                },
+                {
+                    titleZh: '漆面美容工程',
+                    titleEn: 'Paint Correction',
+                    items: [
+                        { id: 'one_step', nameZh: '小美容 (單劑拋光)', nameEn: 'One Step Polish', descZh: '提升亮度/去除輕微細紋', descEn: 'Gloss Enhancement' },
+                        { id: 'multi_correction', nameZh: '大美容 (多層次修復)', nameEn: 'Multi-Correction', descZh: '深層紋路修復/鏡面處理', descEn: 'Deep Scratch Removal' },
+                    ]
+                },
+                {
+                    titleZh: '專業鍍膜中心',
+                    titleEn: 'Professional Coating',
+                    items: [
+                        { id: 'coating_7y', nameZh: '長期鍍膜 (7年)', nameEn: 'Long Term Coating (7 Years)', descZh: '極致防護', descEn: 'Ultimate Protection' },
+                        { id: 'coating_5y', nameZh: '長期鍍膜 (5年)', nameEn: 'Long Term Coating (5 Years)', descZh: '高耐久性', descEn: 'High Durability' },
+                        { id: 'coating_2y', nameZh: '長期鍍膜 (2年)', nameEn: 'Long Term Coating (2 Years)', descZh: '進階防護', descEn: 'Advanced Protection' },
+                        { id: 'coating_1y', nameZh: '長期鍍膜 (1年)', nameEn: 'Long Term Coating (1 Year)', descZh: '基礎長效', descEn: 'Standard Long-Term' },
+                        { id: 'coating_short', nameZh: '短期鍍膜 (半年)', nameEn: 'Short Term Coating (6 Months)', descZh: '季節性護理', descEn: 'Seasonal Care' },
+                    ]
+                }
             ];
 
             const addons = [
@@ -153,7 +164,6 @@
                 { id: 'moto', nameZh: '機車 (Motorcycle)', nameEn: 'Motorcycle' },
             ];
 
-            // 產生 10:00 - 20:00 的整點時段
             const generateTimeSlots = () => {
                 const slots = [];
                 for (let i = 10; i <= 20; i++) {
@@ -163,7 +173,6 @@
             };
             const timeSlots = generateTimeSlots();
 
-            // 處理選取 (儲存 ID)
             const toggleSelection = (category, id) => {
                 setFormData(prev => {
                     const list = prev[category];
@@ -177,19 +186,18 @@
             const handleNext = () => setStep(prev => prev + 1);
             const handleBack = () => setStep(prev => prev - 1);
 
-            // 🔥 核心功能：產生中英對照的訊息
             const handleLineSubmit = () => {
-                // 1. 轉換車型名稱
+                // 1. 扁平化所有服務項目以便搜尋
+                const allServices = serviceGroups.flatMap(g => g.items);
+
                 const selectedCar = carTypes.find(c => c.id === formData.carType);
                 const carStr = selectedCar ? `${selectedCar.nameZh} / ${selectedCar.nameEn}` : '未選擇';
 
-                // 2. 轉換服務名稱
                 const serviceStr = formData.serviceType.map(sid => {
-                    const s = services.find(item => item.id === sid);
+                    const s = allServices.find(item => item.id === sid);
                     return s ? `${s.nameZh} (${s.nameEn})` : '';
                 }).join(', ');
 
-                // 3. 轉換附加服務
                 const addonStr = formData.addons.length > 0 
                     ? formData.addons.map(aid => {
                         const a = addons.find(item => item.id === aid);
@@ -197,7 +205,6 @@
                       }).join(', ')
                     : '無 / None';
 
-                // 4. 組合最終雙語訊息
                 const message = `
 【TDS 預約諮詢 | Booking Inquiry】
 -----------------------
@@ -215,38 +222,35 @@ ${addonStr}
 請問此時段是否可以預約？
 Is this slot available?`.trim();
 
-                // 複製 + 跳轉
                 navigator.clipboard.writeText(message).catch(() => {});
                 const encodedMessage = encodeURIComponent(message);
                 const lineUrl = `https://line.me/R/oaMessage/@794xqwdg/?${encodedMessage}`;
                 window.location.href = lineUrl;
             };
 
-            // 輔助函式：根據目前語言取得顯示名稱
-            const getServiceName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
-            const getServiceDesc = (item) => lang === 'zh' ? item.descZh : item.descEn;
+            // 輔助函式
+            const getGroupTitle = (group) => lang === 'zh' ? group.titleZh : group.titleEn;
+            const getItemName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
+            const getItemDesc = (item) => lang === 'zh' ? item.descZh : item.descEn;
             const getAddonName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
             const getCarName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
+            
+            // 尋找服務名稱 (確認頁用)
+            const allServicesFlat = serviceGroups.flatMap(g => g.items);
+            const getSelectedServiceName = (sid) => {
+                const s = allServicesFlat.find(i => i.id === sid);
+                return s ? getItemName(s) : '';
+            }
 
             return (
                 <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-white selection:text-black pb-10">
                     <div className="max-w-2xl mx-auto px-6 py-8">
                         
-                        {/* 語言切換按鈕 */}
+                        {/* 語言切換 */}
                         <div className="flex justify-end mb-4">
                             <div className="bg-[#1e1e1e] border border-gray-600 rounded-full p-1 flex">
-                                <button 
-                                    onClick={() => setLang('zh')}
-                                    className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'zh' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    中文
-                                </button>
-                                <button 
-                                    onClick={() => setLang('en')}
-                                    className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'en' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
-                                >
-                                    EN
-                                </button>
+                                <button onClick={() => setLang('zh')} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'zh' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>中文</button>
+                                <button onClick={() => setLang('en')} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'en' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>EN</button>
                             </div>
                         </div>
 
@@ -265,38 +269,38 @@ Is this slot available?`.trim();
                                 </div>
                             ))}
                         </div>
-                        {/* 進度文字標籤 */}
-                        <div className="flex justify-between text-xs text-gray-500 px-1 -mt-8 mb-8">
-                            <span>{t.step1}</span>
-                            <span>{t.step2}</span>
-                            <span>{t.step3}</span>
-                        </div>
 
-                        {/* Step 1 */}
+                        {/* Step 1: 服務選擇 */}
                         {step === 1 && (
-                            <div className="space-y-6 fade-in">
+                            <div className="space-y-8 fade-in">
                                 <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.selectService}</h2>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {services.map((service) => (
-                                        <div 
-                                            key={service.id}
-                                            onClick={() => toggleSelection('serviceType', service.id)}
-                                            className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 flex items-center gap-4 group
-                                                ${formData.serviceType.includes(service.id) 
-                                                    ? 'border-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)]' 
-                                                    : 'border-gray-600 hover:border-gray-400 bg-[#1e1e1e]'}`}
-                                        >
-                                            <div className="text-3xl">{service.icon}</div>
-                                            <div>
-                                                <h3 className="font-bold text-lg text-white">{getServiceName(service)}</h3>
-                                                <p className="text-sm text-gray-300">{getServiceDesc(service)}</p>
-                                            </div>
+                                {/* 遍歷三大服務分類 */}
+                                {serviceGroups.map((group, index) => (
+                                    <div key={index} className="space-y-4">
+                                        <h3 className="text-lg font-bold text-gray-300 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
+                                            {getGroupTitle(group)}
+                                        </h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            {group.items.map((service) => (
+                                                <div 
+                                                    key={service.id}
+                                                    onClick={() => toggleSelection('serviceType', service.id)}
+                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-center gap-1 group
+                                                        ${formData.serviceType.includes(service.id) 
+                                                            ? 'border-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.15)]' 
+                                                            : 'border-gray-700 hover:border-gray-500 bg-[#1a1a1a]'}`}
+                                                >
+                                                    <h4 className="font-bold text-white text-lg">{getItemName(service)}</h4>
+                                                    <p className="text-xs text-gray-400">{getItemDesc(service)}</p>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    </div>
+                                ))}
 
-                                <div className="mt-8">
+                                <div className="mt-8 pt-6 border-t border-gray-800">
                                     <h3 className="text-sm text-gray-300 font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
                                         <span className="w-2 h-2 bg-white rounded-full inline-block"></span>
                                         {t.addons}
@@ -327,7 +331,7 @@ Is this slot available?`.trim();
                             </div>
                         )}
 
-                        {/* Step 2 */}
+                        {/* Step 2: 車型時間 (保持不變) */}
                         {step === 2 && (
                             <div className="space-y-8 fade-in">
                                 <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.step2}</h2>
@@ -388,7 +392,7 @@ Is this slot available?`.trim();
                             </div>
                         )}
 
-                        {/* Step 3 */}
+                        {/* Step 3: 確認預約 (邏輯更新) */}
                         {step === 3 && (
                             <div className="space-y-6 fade-in">
                                 <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.confirmTitle}</h2>
@@ -407,10 +411,9 @@ Is this slot available?`.trim();
                                     <div>
                                         <span className="text-gray-400 block mb-3">{t.serviceResult}</span>
                                         <div className="flex flex-wrap gap-2">
-                                            {formData.serviceType.map(sid => {
-                                                const s = services.find(item => item.id === sid);
-                                                return s ? <span key={sid} className="bg-white text-black px-3 py-1 rounded-lg font-bold text-sm">{getServiceName(s)}</span> : null;
-                                            })}
+                                            {formData.serviceType.map(sid => (
+                                                <span key={sid} className="bg-white text-black px-3 py-1 rounded-lg font-bold text-sm">{getSelectedServiceName(sid)}</span>
+                                            ))}
                                             {formData.addons.map(aid => {
                                                 const a = addons.find(item => item.id === aid);
                                                 return a ? <span key={aid} className="border border-white/50 px-3 py-1 rounded-lg text-sm text-gray-200">+ {getAddonName(a)}</span> : null;
