@@ -4,206 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TDS 專業車體美容預約系統 | TDS Booking System</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: '#ffffff',
-                    }
-                }
-            }
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    colors: { brand: '#ffffff' },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                } 
+            } 
         }
     </script>
-    
     <style>
-        body { background-color: #121212; color: white; }
+        body { background-color: #121212; color: white; font-size: 18px; /* 基礎字體加大 */ }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 強制深色模式與日期選單修正 */
         :root { color-scheme: dark; }
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 0.8;
-            cursor: pointer;
-        }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.8; cursor: pointer; transform: scale(1.2); }
     </style>
 </head>
 <body>
-
     <div id="root"></div>
-
     <script type="text/babel">
         const { useState } = React;
 
         const Logo = () => (
-            <div className="flex justify-center mb-6">
-                <div className="w-32 h-32 rounded-full border-2 border-white/30 shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center justify-center bg-black overflow-hidden">
+            <div className="flex justify-center mb-8">
+                <div className="w-36 h-36 rounded-full border-2 border-white/30 shadow-[0_0_25px_rgba(255,255,255,0.15)] flex items-center justify-center bg-black overflow-hidden">
                      <img src="TDS Logo.jpg" alt="TDS" className="w-full h-full object-cover" onError={(e) => {e.target.style.display='none'; e.target.parentElement.innerText='TDS Logo'}} />
                 </div>
             </div>
         );
 
         const translations = {
-            zh: {
-                subtitle: '專業車體美容・鍍膜諮詢',
-                step1: '服務項目',
-                step2: '車型時間',
-                step3: '確認預約',
-                selectService: '選擇服務項目 (可複選)',
-                addons: '附加選項 Add-ons',
-                nextToTime: '下一步：選擇車型與時間 →',
-                carTypeLabel: '您的愛車種類',
-                dateLabel: '預約日期',
-                timeLabel: '預約時段 (1小時/單位)',
-                selectTimePlaceholder: '請選擇時段',
-                back: '回上一步',
-                nextToConfirm: '下一步：確認資訊',
-                confirmTitle: '預約單確認',
-                carTypeResult: '車型',
-                timeResult: '預約時間',
-                serviceResult: '服務項目',
-                nameLabel: '您的稱呼 (選填)',
-                namePlaceholder: '例如：陳先生 / Mr. Chen',
-                tip: '按下按鈕後將開啟 LINE，系統已幫您輸入好中英對照內容，請直接按下「傳送」即可。',
-                btnModify: '修改',
-                btnSubmit: '聯繫 LINE 預約',
-            },
-            en: {
-                subtitle: 'Professional Auto Detailing & Coating',
-                step1: 'Services',
-                step2: 'Car & Time',
-                step3: 'Confirm',
-                selectService: 'Select Services (Multiple)',
-                addons: 'Add-ons',
-                nextToTime: 'Next: Car & Time →',
-                carTypeLabel: 'Vehicle Type',
-                dateLabel: 'Preferred Date',
-                timeLabel: 'Preferred Time (1hr slots)',
-                selectTimePlaceholder: 'Select a time slot',
-                back: 'Back',
-                nextToConfirm: 'Next: Confirmation',
-                confirmTitle: 'Booking Confirmation',
-                carTypeResult: 'Vehicle',
-                timeResult: 'Time',
-                serviceResult: 'Services',
-                nameLabel: 'Your Name (Optional)',
-                namePlaceholder: 'e.g., Mr. Chen',
-                tip: 'Pressing the button will open LINE with a bilingual message pre-filled. Just press "Send".',
-                btnModify: 'Edit',
-                btnSubmit: 'Book via LINE',
-            }
+            zh: { subtitle: '專業車體美容・鍍膜諮詢', step1: '服務項目', step2: '車型時間', step3: '確認預約', selectService: '選擇服務項目 (可複選)', addons: '附加選項 Add-ons', nextToTime: '下一步：選擇車型與時間 →', carTypeLabel: '您的愛車種類', dateLabel: '預約日期', timeLabel: '預約時段 (1小時/單位)', selectTimePlaceholder: '請選擇時段', back: '回上一步', nextToConfirm: '下一步：確認資訊', confirmTitle: '預約單確認', carTypeResult: '車型', timeResult: '預約時間', serviceResult: '服務項目', nameLabel: '您的稱呼 (選填)', namePlaceholder: '例如：陳先生 / Mr. Chen', tip: '按下按鈕後將開啟 LINE，系統已幫您輸入好中英對照內容，請直接按下「傳送」即可。', btnModify: '修改', btnSubmit: '聯繫 LINE 預約' },
+            en: { subtitle: 'Professional Auto Detailing & Coating', step1: 'Services', step2: 'Car & Time', step3: 'Confirm', selectService: 'Select Services (Multiple)', addons: 'Add-ons', nextToTime: 'Next: Car & Time →', carTypeLabel: 'Vehicle Type', dateLabel: 'Preferred Date', timeLabel: 'Preferred Time (1hr slots)', selectTimePlaceholder: 'Select a time slot', back: 'Back', nextToConfirm: 'Next: Confirmation', confirmTitle: 'Booking Confirmation', carTypeResult: 'Vehicle', timeResult: 'Time', serviceResult: 'Services', nameLabel: 'Your Name (Optional)', namePlaceholder: 'e.g., Mr. Chen', tip: 'Pressing the button will open LINE with a bilingual message pre-filled. Just press "Send".', btnModify: 'Edit', btnSubmit: 'Book via LINE' }
         };
 
         function TDSBookingSystem() {
-            const [lang, setLang] = useState('zh'); 
+            const [lang, setLang] = useState('zh');
             const [step, setStep] = useState(1);
-            const [formData, setFormData] = useState({
-                serviceType: [],
-                addons: [],
-                carType: '',
-                date: '',
-                time: '',
-                name: ''
-            });
+            const [formData, setFormData] = useState({ serviceType: [], addons: [], carType: '', date: '', time: '', name: '' });
 
             const t = translations[lang];
 
-            // 🔥 新增：分組的服務項目結構
             const serviceGroups = [
-                {
-                    titleZh: '基礎清潔與護理',
-                    titleEn: 'Basic Cleaning & Care',
-                    items: [
-                        { id: 'wash', nameZh: '精緻洗車', nameEn: 'Exquisite Wash', descZh: '外觀與內裝清潔', descEn: 'Exterior & Interior' },
-                        { id: 'leather', nameZh: '皮革保養', nameEn: 'Leather Care', descZh: '內裝滋潤與修復', descEn: 'Interior Conditioning' },
-                        { id: 'deep_clean', nameZh: '深度清潔', nameEn: 'Deep Cleaning', descZh: '除異味、蒸氣殺菌', descEn: 'Odor Removal & Steam' },
-                    ]
-                },
-                {
-                    titleZh: '漆面美容工程',
-                    titleEn: 'Paint Correction',
-                    items: [
-                        { id: 'one_step', nameZh: '小美容 (單劑拋光)', nameEn: 'One Step Polish', descZh: '提升亮度/去除輕微細紋', descEn: 'Gloss Enhancement' },
-                        { id: 'multi_correction', nameZh: '大美容 (多層次修復)', nameEn: 'Multi-Correction', descZh: '深層紋路修復/鏡面處理', descEn: 'Deep Scratch Removal' },
-                    ]
-                },
-                {
-                    titleZh: '專業鍍膜中心',
-                    titleEn: 'Professional Coating',
-                    items: [
-                        { id: 'coating_7y', nameZh: '長期鍍膜 (7年)', nameEn: 'Long Term Coating (7 Years)', descZh: '極致防護', descEn: 'Ultimate Protection' },
-                        { id: 'coating_5y', nameZh: '長期鍍膜 (5年)', nameEn: 'Long Term Coating (5 Years)', descZh: '高耐久性', descEn: 'High Durability' },
-                        { id: 'coating_2y', nameZh: '長期鍍膜 (2年)', nameEn: 'Long Term Coating (2 Years)', descZh: '進階防護', descEn: 'Advanced Protection' },
-                        { id: 'coating_1y', nameZh: '長期鍍膜 (1年)', nameEn: 'Long Term Coating (1 Year)', descZh: '基礎長效', descEn: 'Standard Long-Term' },
-                        { id: 'coating_short', nameZh: '短期鍍膜 (半年)', nameEn: 'Short Term Coating (6 Months)', descZh: '季節性護理', descEn: 'Seasonal Care' },
-                    ]
-                }
+                { titleZh: '基礎清潔與護理', titleEn: 'Basic Cleaning & Care', items: [ { id: 'wash', nameZh: '精緻洗車', nameEn: 'Exquisite Wash', descZh: '外觀與內裝清潔', descEn: 'Exterior & Interior' }, { id: 'leather', nameZh: '皮革保養', nameEn: 'Leather Care', descZh: '內裝滋潤與修復', descEn: 'Interior Conditioning' }, { id: 'deep_clean', nameZh: '深度清潔', nameEn: 'Deep Cleaning', descZh: '除異味、蒸氣殺菌', descEn: 'Odor Removal & Steam' } ] },
+                { titleZh: '漆面美容工程', titleEn: 'Paint Correction', items: [ { id: 'one_step', nameZh: '小美容 (單劑拋光)', nameEn: 'One Step Polish', descZh: '提升亮度/去除輕微細紋', descEn: 'Gloss Enhancement' }, { id: 'multi_correction', nameZh: '大美容 (多層次修復)', nameEn: 'Multi-Correction', descZh: '深層紋路修復/鏡面處理', descEn: 'Deep Scratch Removal' } ] },
+                { titleZh: '專業鍍膜中心', titleEn: 'Professional Coating', items: [ { id: 'coating_7y', nameZh: '長期鍍膜 (7年)', nameEn: 'Long Term Coating (7 Years)', descZh: '極致防護', descEn: 'Ultimate Protection' }, { id: 'coating_5y', nameZh: '長期鍍膜 (5年)', nameEn: 'Long Term Coating (5 Years)', descZh: '高耐久性', descEn: 'High Durability' }, { id: 'coating_2y', nameZh: '長期鍍膜 (2年)', nameEn: 'Long Term Coating (2 Years)', descZh: '進階防護', descEn: 'Advanced Protection' }, { id: 'coating_1y', nameZh: '長期鍍膜 (1年)', nameEn: 'Long Term Coating (1 Year)', descZh: '基礎長效', descEn: 'Standard Long-Term' }, { id: 'coating_short', nameZh: '短期鍍膜 (半年)', nameEn: 'Short Term Coating (6 Months)', descZh: '季節性護理', descEn: 'Seasonal Care' } ] }
             ];
 
-            const addons = [
-                { id: 'ac_clean', nameZh: '冷氣管路清潔', nameEn: 'A/C Cleaning' },
-                { id: 'wiper', nameZh: '雨刷更換', nameEn: 'Wiper Replacement' },
-                { id: 'coating_maintain', nameZh: '鍍膜定期維護', nameEn: 'Coating Maintenance' },
-            ];
+            const addons = [ { id: 'ac_clean', nameZh: '冷氣管路清潔', nameEn: 'A/C Cleaning' }, { id: 'wiper', nameZh: '雨刷更換', nameEn: 'Wiper Replacement' }, { id: 'coating_maintain', nameZh: '鍍膜定期維護', nameEn: 'Coating Maintenance' } ];
+            const carTypes = [ { id: 'sedan', nameZh: '小型房車 (Sedan)', nameEn: 'Sedan' }, { id: 'suv', nameZh: '休旅車 (SUV)', nameEn: 'SUV' }, { id: 'coupe', nameZh: '跑車 (Coupe)', nameEn: 'Coupe' }, { id: 'mpv', nameZh: '大型休旅/MPV', nameEn: 'Large SUV / MPV' }, { id: 'moto', nameZh: '機車 (Motorcycle)', nameEn: 'Motorcycle' } ];
 
-            const carTypes = [
-                { id: 'sedan', nameZh: '小型房車 (Sedan)', nameEn: 'Sedan' },
-                { id: 'suv', nameZh: '休旅車 (SUV)', nameEn: 'SUV' },
-                { id: 'coupe', nameZh: '跑車 (Coupe)', nameEn: 'Coupe' },
-                { id: 'mpv', nameZh: '大型休旅/MPV', nameEn: 'Large SUV / MPV' },
-                { id: 'moto', nameZh: '機車 (Motorcycle)', nameEn: 'Motorcycle' },
-            ];
-
-            const generateTimeSlots = () => {
-                const slots = [];
-                for (let i = 10; i <= 20; i++) {
-                    slots.push(`${i}:00`);
-                }
-                return slots;
-            };
+            const generateTimeSlots = () => { const slots = []; for (let i = 10; i <= 20; i++) { slots.push(`${i}:00`); } return slots; };
             const timeSlots = generateTimeSlots();
 
-            const toggleSelection = (category, id) => {
-                setFormData(prev => {
-                    const list = prev[category];
-                    if (list.includes(id)) {
-                        return { ...prev, [category]: list.filter(i => i !== id) };
-                    }
-                    return { ...prev, [category]: [...list, id] };
-                });
-            };
-
-            const handleNext = () => setStep(prev => prev + 1);
-            const handleBack = () => setStep(prev => prev - 1);
+            const toggleSelection = (category, id) => { setFormData(prev => { const list = prev[category]; if (list.includes(id)) { return { ...prev, [category]: list.filter(i => i !== id) }; } return { ...prev, [category]: [...list, id] }; }); };
+            
+            const handleNext = () => { window.scrollTo(0,0); setStep(prev => prev + 1); };
+            const handleBack = () => { window.scrollTo(0,0); setStep(prev => prev - 1); };
 
             const handleLineSubmit = () => {
-                // 1. 扁平化所有服務項目以便搜尋
                 const allServices = serviceGroups.flatMap(g => g.items);
-
                 const selectedCar = carTypes.find(c => c.id === formData.carType);
                 const carStr = selectedCar ? `${selectedCar.nameZh} / ${selectedCar.nameEn}` : '未選擇';
-
-                const serviceStr = formData.serviceType.map(sid => {
-                    const s = allServices.find(item => item.id === sid);
-                    return s ? `${s.nameZh} (${s.nameEn})` : '';
-                }).join(', ');
-
-                const addonStr = formData.addons.length > 0 
-                    ? formData.addons.map(aid => {
-                        const a = addons.find(item => item.id === aid);
-                        return a ? `${a.nameZh} (${a.nameEn})` : '';
-                      }).join(', ')
-                    : '無 / None';
+                const serviceStr = formData.serviceType.map(sid => { const s = allServices.find(item => item.id === sid); return s ? `${s.nameZh} (${s.nameEn})` : ''; }).join(', ');
+                const addonStr = formData.addons.length > 0 ? formData.addons.map(aid => { const a = addons.find(item => item.id === aid); return a ? `${a.nameZh} (${a.nameEn})` : ''; }).join(', ') : '無 / None';
 
                 const message = `
 【TDS 預約諮詢 | Booking Inquiry】
@@ -228,222 +98,187 @@ Is this slot available?`.trim();
                 window.location.href = lineUrl;
             };
 
-            // 輔助函式
             const getGroupTitle = (group) => lang === 'zh' ? group.titleZh : group.titleEn;
             const getItemName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
             const getItemDesc = (item) => lang === 'zh' ? item.descZh : item.descEn;
             const getAddonName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
             const getCarName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
-            
-            // 尋找服務名稱 (確認頁用)
             const allServicesFlat = serviceGroups.flatMap(g => g.items);
-            const getSelectedServiceName = (sid) => {
-                const s = allServicesFlat.find(i => i.id === sid);
-                return s ? getItemName(s) : '';
-            }
+            const getSelectedServiceName = (sid) => { const s = allServicesFlat.find(i => i.id === sid); return s ? getItemName(s) : ''; }
 
             return (
-                <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-white selection:text-black pb-10">
-                    <div className="max-w-2xl mx-auto px-6 py-8">
-                        
+                <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-white selection:text-black pb-12">
+                    <div className="max-w-3xl mx-auto px-6 py-10">
                         {/* 語言切換 */}
-                        <div className="flex justify-end mb-4">
-                            <div className="bg-[#1e1e1e] border border-gray-600 rounded-full p-1 flex">
-                                <button onClick={() => setLang('zh')} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'zh' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>中文</button>
-                                <button onClick={() => setLang('en')} className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'en' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>EN</button>
+                        <div className="flex justify-end mb-6">
+                            <div className="bg-[#1e1e1e] border border-gray-600 rounded-full p-1.5 flex shadow-lg">
+                                <button onClick={() => setLang('zh')} className={`px-5 py-2 rounded-full text-sm font-bold transition-all ${lang === 'zh' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>中文</button>
+                                <button onClick={() => setLang('en')} className={`px-5 py-2 rounded-full text-sm font-bold transition-all ${lang === 'en' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}>EN</button>
                             </div>
                         </div>
 
                         <Logo />
-                        <div className="text-center mb-10">
-                            <h1 className="text-3xl font-bold tracking-wider mb-2 text-white">TDS (The Detail Studio)</h1>
-                            <p className="text-gray-300 text-sm tracking-widest uppercase font-medium">{t.subtitle}</p>
+
+                        {/* 標題區 */}
+                        <div className="text-center mb-12">
+                            <h1 className="text-4xl md:text-5xl font-extrabold tracking-wider mb-3 text-white">TDS</h1>
+                            <p className="text-gray-300 text-base md:text-lg tracking-[0.2em] uppercase font-medium">{t.subtitle}</p>
                         </div>
 
-                        {/* 進度條 */}
-                        <div className="flex justify-between mb-10 relative px-4">
-                            <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-gray-700 -z-10"></div>
+                        {/* 步驟指示器 */}
+                        <div className="flex justify-between mb-12 relative px-4">
+                            <div className="absolute top-1/2 left-4 right-4 h-1 bg-gray-700 -z-10 rounded-full"></div>
                             {[1, 2, 3].map((s) => (
-                                <div key={s} className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 ${step >= s ? 'bg-white text-black border-white scale-110' : 'bg-[#121212] text-gray-400 border-gray-600'}`}>
+                                <div key={s} className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 border-4 ${step >= s ? 'bg-white text-black border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-[#121212] text-gray-500 border-gray-600'}`}>
                                     {s}
                                 </div>
                             ))}
                         </div>
 
-                        {/* Step 1: 服務選擇 */}
+                        {/* 內容區塊 */}
                         {step === 1 && (
-                            <div className="space-y-8 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.selectService}</h2>
+                            <div className="space-y-10 fade-in">
+                                <h2 className="text-2xl font-bold border-l-8 border-white pl-5 text-white">{t.selectService}</h2>
                                 
-                                {/* 遍歷三大服務分類 */}
                                 {serviceGroups.map((group, index) => (
-                                    <div key={index} className="space-y-4">
-                                        <h3 className="text-lg font-bold text-gray-300 flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
+                                    <div key={index} className="space-y-5">
+                                        <h3 className="text-xl font-bold text-gray-200 flex items-center gap-3">
+                                            <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
                                             {getGroupTitle(group)}
                                         </h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {group.items.map((service) => (
-                                                <div 
-                                                    key={service.id}
-                                                    onClick={() => toggleSelection('serviceType', service.id)}
-                                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-center gap-1 group
-                                                        ${formData.serviceType.includes(service.id) 
-                                                            ? 'border-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.15)]' 
-                                                            : 'border-gray-700 hover:border-gray-500 bg-[#1a1a1a]'}`}
-                                                >
-                                                    <h4 className="font-bold text-white text-lg">{getItemName(service)}</h4>
-                                                    <p className="text-xs text-gray-400">{getItemDesc(service)}</p>
+                                                <div key={service.id} onClick={() => toggleSelection('serviceType', service.id)} 
+                                                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-center gap-2 group relative overflow-hidden
+                                                     ${formData.serviceType.includes(service.id) 
+                                                        ? 'border-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)]' 
+                                                        : 'border-gray-700 hover:border-gray-500 bg-[#1a1a1a]'}`}>
+                                                    <h4 className="font-bold text-white text-xl">{getItemName(service)}</h4>
+                                                    <p className="text-sm text-gray-400 leading-relaxed">{getItemDesc(service)}</p>
+                                                    {formData.serviceType.includes(service.id) && <div className="absolute top-4 right-4 text-white text-xl">✓</div>}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 ))}
 
-                                <div className="mt-8 pt-6 border-t border-gray-800">
-                                    <h3 className="text-sm text-gray-300 font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-white rounded-full inline-block"></span>
-                                        {t.addons}
+                                <div className="mt-10 pt-8 border-t border-gray-800">
+                                    <h3 className="text-base text-gray-300 font-bold mb-5 uppercase tracking-wider flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-white rounded-full inline-block"></span>{t.addons}
                                     </h3>
-                                    <div className="flex flex-wrap gap-3">
+                                    <div className="flex flex-wrap gap-4">
                                         {addons.map((addon) => (
-                                            <button
-                                                key={addon.id}
-                                                onClick={() => toggleSelection('addons', addon.id)}
-                                                className={`px-5 py-3 rounded-full text-sm font-medium border-2 transition-all
-                                                    ${formData.addons.includes(addon.id)
-                                                        ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]'
-                                                        : 'bg-transparent text-gray-300 border-gray-600 hover:border-gray-400'}`}
-                                            >
+                                            <button key={addon.id} onClick={() => toggleSelection('addons', addon.id)} 
+                                                className={`px-6 py-4 rounded-xl text-base font-medium border-2 transition-all 
+                                                ${formData.addons.includes(addon.id) 
+                                                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
+                                                    : 'bg-transparent text-gray-300 border-gray-600 hover:border-gray-400'}`}>
                                                 + {getAddonName(addon)}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
-                                <button 
-                                    onClick={handleNext}
-                                    disabled={formData.serviceType.length === 0}
-                                    className="w-full mt-10 bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_5px_15px_rgba(255,255,255,0.1)]"
-                                >
+                                <button onClick={handleNext} disabled={formData.serviceType.length === 0} 
+                                    className="w-full mt-8 bg-white text-black py-5 rounded-2xl font-bold text-xl hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-lg active:scale-95 transform duration-100">
                                     {t.nextToTime}
                                 </button>
                             </div>
                         )}
 
-                        {/* Step 2: 車型時間 (保持不變) */}
                         {step === 2 && (
-                            <div className="space-y-8 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.step2}</h2>
-
-                                <div className="space-y-4">
-                                    <label className="block text-gray-300 text-sm font-bold">{t.carTypeLabel}</label>
-                                    <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-10 fade-in">
+                                <h2 className="text-2xl font-bold border-l-8 border-white pl-5 text-white">{t.step2}</h2>
+                                
+                                <div className="space-y-5">
+                                    <label className="block text-gray-300 text-lg font-bold">{t.carTypeLabel}</label>
+                                    <div className="grid grid-cols-2 gap-4">
                                         {carTypes.map((type) => (
-                                            <button
-                                                key={type.id}
-                                                onClick={() => setFormData({...formData, carType: type.id})}
-                                                className={`p-4 text-sm font-medium rounded-lg border-2 text-left transition-all
-                                                    ${formData.carType === type.id 
-                                                        ? 'border-white bg-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]' 
-                                                        : 'border-gray-600 text-gray-300 hover:border-gray-400 bg-[#1e1e1e]'}`}
-                                            >
+                                            <button key={type.id} onClick={() => setFormData({...formData, carType: type.id})} 
+                                                className={`p-5 text-base md:text-lg font-medium rounded-xl border-2 text-left transition-all 
+                                                ${formData.carType === type.id 
+                                                    ? 'border-white bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                                                    : 'border-gray-600 text-gray-300 hover:border-gray-400 bg-[#1e1e1e]'}`}>
                                                 {getCarName(type)}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div>
-                                        <label className="block text-gray-300 text-sm font-bold mb-3">{t.dateLabel}</label>
-                                        <input 
-                                            type="date" 
-                                            className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-4 text-white focus:border-white outline-none cursor-pointer appearance-none"
-                                            onChange={(e) => setFormData({...formData, date: e.target.value})}
-                                            onClick={(e) => e.target.showPicker && e.target.showPicker()} 
-                                        />
+                                        <label className="block text-gray-300 text-lg font-bold mb-4">{t.dateLabel}</label>
+                                        <input type="date" 
+                                            className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-5 text-xl text-white focus:border-white outline-none cursor-pointer appearance-none" 
+                                            onChange={(e) => setFormData({...formData, date: e.target.value})} 
+                                            onClick={(e) => e.target.showPicker && e.target.showPicker()} />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-300 text-sm font-bold mb-3">{t.timeLabel}</label>
+                                        <label className="block text-gray-300 text-lg font-bold mb-4">{t.timeLabel}</label>
                                         <select 
-                                            className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-4 text-white focus:border-white outline-none appearance-none cursor-pointer"
-                                            onChange={(e) => setFormData({...formData, time: e.target.value})}
-                                            value={formData.time}
-                                        >
+                                            className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-5 text-xl text-white focus:border-white outline-none appearance-none cursor-pointer" 
+                                            onChange={(e) => setFormData({...formData, time: e.target.value})} 
+                                            value={formData.time}>
                                             <option value="">{t.selectTimePlaceholder}</option>
-                                            {timeSlots.map(time => (
-                                                <option key={time} value={time}>{time}</option>
-                                            ))}
+                                            {timeSlots.map(time => (<option key={time} value={time}>{time}</option>))}
                                         </select>
                                     </div>
                                 </div>
-                                
-                                <div className="pt-6 flex gap-4">
-                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">{t.back}</button>
-                                    <button 
-                                        onClick={handleNext}
-                                        disabled={!formData.carType || !formData.date || !formData.time}
-                                        className="w-2/3 bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-gray-200 disabled:opacity-40 shadow-[0_5px_15px_rgba(255,255,255,0.1)]"
-                                    >
+
+                                <div className="pt-8 flex gap-5">
+                                    <button onClick={handleBack} className="w-1/3 py-5 rounded-2xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold text-lg">{t.back}</button>
+                                    <button onClick={handleNext} disabled={!formData.carType || !formData.date || !formData.time} 
+                                        className="w-2/3 bg-white text-black py-5 rounded-2xl font-bold text-xl hover:bg-gray-200 disabled:opacity-40 shadow-lg active:scale-95 transform duration-100">
                                         {t.nextToConfirm}
                                     </button>
                                 </div>
                             </div>
                         )}
 
-                        {/* Step 3: 確認預約 (邏輯更新) */}
                         {step === 3 && (
-                            <div className="space-y-6 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.confirmTitle}</h2>
+                            <div className="space-y-8 fade-in">
+                                <h2 className="text-2xl font-bold border-l-8 border-white pl-5 text-white">{t.confirmTitle}</h2>
                                 
-                                <div className="bg-[#1e1e1e] p-6 rounded-2xl border-2 border-gray-700 space-y-5">
-                                    <div className="flex justify-between items-center border-b border-gray-700 pb-4">
-                                        <span className="text-gray-400">{t.carTypeResult}</span>
-                                        <span className="font-bold text-xl text-white">
-                                            {carTypes.find(c => c.id === formData.carType) ? getCarName(carTypes.find(c => c.id === formData.carType)) : ''}
-                                        </span>
+                                <div className="bg-[#1e1e1e] p-8 rounded-3xl border-2 border-gray-700 space-y-6">
+                                    <div className="flex justify-between items-center border-b border-gray-700 pb-5">
+                                        <span className="text-gray-400 text-lg">{t.carTypeResult}</span>
+                                        <span className="font-bold text-2xl text-white">{carTypes.find(c => c.id === formData.carType) ? getCarName(carTypes.find(c => c.id === formData.carType)) : ''}</span>
                                     </div>
-                                    <div className="flex justify-between items-center border-b border-gray-700 pb-4">
-                                        <span className="text-gray-400">{t.timeResult}</span>
-                                        <span className="font-bold text-lg text-white">{formData.date} <span className="text-yellow-400 mx-1">|</span> {formData.time}</span>
+                                    <div className="flex justify-between items-center border-b border-gray-700 pb-5">
+                                        <span className="text-gray-400 text-lg">{t.timeResult}</span>
+                                        <span className="font-bold text-xl text-white">{formData.date} <span className="text-yellow-400 mx-2">|</span> {formData.time}</span>
                                     </div>
                                     <div>
-                                        <span className="text-gray-400 block mb-3">{t.serviceResult}</span>
-                                        <div className="flex flex-wrap gap-2">
+                                        <span className="text-gray-400 block mb-4 text-lg">{t.serviceResult}</span>
+                                        <div className="flex flex-wrap gap-3">
                                             {formData.serviceType.map(sid => (
-                                                <span key={sid} className="bg-white text-black px-3 py-1 rounded-lg font-bold text-sm">{getSelectedServiceName(sid)}</span>
+                                                <span key={sid} className="bg-white text-black px-4 py-2 rounded-xl font-bold text-base shadow-md">
+                                                    {getSelectedServiceName(sid)}
+                                                </span>
                                             ))}
-                                            {formData.addons.map(aid => {
-                                                const a = addons.find(item => item.id === aid);
-                                                return a ? <span key={aid} className="border border-white/50 px-3 py-1 rounded-lg text-sm text-gray-200">+ {getAddonName(a)}</span> : null;
+                                            {formData.addons.map(aid => { 
+                                                const a = addons.find(item => item.id === aid); 
+                                                return a ? <span key={aid} className="border border-white/50 px-4 py-2 rounded-xl text-base text-gray-200">+ {getAddonName(a)}</span> : null; 
                                             })}
                                         </div>
                                     </div>
-                                    
-                                    <div className="pt-2">
-                                        <label className="block text-gray-300 text-sm font-bold mb-2">{t.nameLabel}</label>
-                                        <input 
-                                            type="text" 
-                                            placeholder={t.namePlaceholder}
-                                            className="w-full bg-black border-2 border-gray-600 rounded-xl p-3 text-white focus:border-white outline-none"
-                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        />
+                                    <div className="pt-4">
+                                        <label className="block text-gray-300 text-lg font-bold mb-3">{t.nameLabel}</label>
+                                        <input type="text" placeholder={t.namePlaceholder} 
+                                            className="w-full bg-black border-2 border-gray-600 rounded-xl p-4 text-lg text-white focus:border-white outline-none placeholder-gray-600" 
+                                            onChange={(e) => setFormData({...formData, name: e.target.value})} />
                                     </div>
                                 </div>
 
-                                <div className="bg-green-900/30 border border-green-700/50 p-4 rounded-xl text-sm text-green-300 flex gap-3 items-start">
-                                    <div className="mt-0.5 text-lg">💡</div>
-                                    <p>{t.tip}</p>
+                                <div className="bg-green-900/30 border border-green-700/50 p-6 rounded-2xl text-base text-green-300 flex gap-4 items-start">
+                                    <div className="mt-0.5 text-2xl">💡</div>
+                                    <p className="leading-relaxed">{t.tip}</p>
                                 </div>
 
-                                <div className="flex gap-4 pt-2">
-                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">{t.btnModify}</button>
-                                    <button 
-                                        onClick={handleLineSubmit}
-                                        className="w-2/3 bg-[#00B900] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#009900] transition-colors shadow-[0_0_25px_rgba(0,185,0,0.4)] flex justify-center items-center gap-2"
-                                    >
-                                        {t.btnSubmit}
+                                <div className="flex gap-5 pt-4">
+                                    <button onClick={handleBack} className="w-1/3 py-5 rounded-2xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold text-lg">{t.btnModify}</button>
+                                    <button onClick={handleLineSubmit} className="w-2/3 bg-[#00B900] text-white py-5 rounded-2xl font-bold text-xl hover:bg-[#009900] transition-colors shadow-[0_0_25px_rgba(0,185,0,0.4)] flex justify-center items-center gap-3 active:scale-95 transform duration-100">
+                                        <span>LINE</span> {t.btnSubmit}
                                     </button>
                                 </div>
                             </div>
