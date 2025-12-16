@@ -29,12 +29,8 @@
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 🔥 關鍵修復：強制瀏覽器表單元件使用深色模式 */
-        :root {
-            color-scheme: dark; 
-        }
-
-        /* 讓日期選擇器的小圖示變成白色，清楚可見 */
+        /* 強制深色模式與日期選單修正 */
+        :root { color-scheme: dark; }
         input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
             opacity: 0.8;
@@ -83,7 +79,7 @@
 
             const carTypes = ['小型房車 (Sedan)', '休旅車 (SUV)', '跑車 (Coupe)', '大型休旅/MPV', '機車 (Motorcycle)'];
 
-            // ⏰ 產生 10:00 - 20:00 的整點時段
+            // 產生 10:00 - 20:00 的整點時段
             const generateTimeSlots = () => {
                 const slots = [];
                 for (let i = 10; i <= 20; i++) {
@@ -106,6 +102,7 @@
             const handleNext = () => setStep(prev => prev + 1);
             const handleBack = () => setStep(prev => prev - 1);
 
+            // 🔥 核心修正：使用 LINE URL Scheme 直接帶入文字
             const handleLineSubmit = () => {
                 const message = `
 【TDS 預約諮詢單】
@@ -116,13 +113,20 @@
 🛠 服務項目：${formData.serviceType.join(', ')}
 ➕ 附加服務：${formData.addons.length > 0 ? formData.addons.join(', ') : '無'}
 -----------------------
-請問此時段是否可以預約？
-                `.trim();
+請問此時段是否可以預約？`.trim();
 
-                navigator.clipboard.writeText(message).then(() => {
-                    alert("✅ 預約資訊已複製！\n即將為您開啟 LINE，請直接「貼上」發送即可。");
-                    window.location.href = "https://line.me/ti/p/@794xqwdg";
-                });
+                // 1. 嘗試複製到剪貼簿 (當作備用方案，不顯示 Alert 打斷流程)
+                navigator.clipboard.writeText(message).catch(() => {});
+
+                // 2. 將文字編碼，準備放入網址
+                const encodedMessage = encodeURIComponent(message);
+
+                // 3. 使用官方帳號專用帶入文字連結
+                // 格式：https://line.me/R/oaMessage/{LINE_ID}/?{message}
+                const lineUrl = `https://line.me/R/oaMessage/@794xqwdg/?${encodedMessage}`;
+
+                // 4. 跳轉
+                window.location.href = lineUrl;
             };
 
             return (
@@ -296,7 +300,7 @@
 
                                 <div className="bg-green-900/30 border border-green-700/50 p-4 rounded-xl text-sm text-green-300 flex gap-3 items-start">
                                     <div className="mt-0.5 text-lg">💡</div>
-                                    <p>系統將自動複製您的預約單。點擊後請在 LINE 對話框 <span className="text-white font-bold underline">長按貼上</span> 即可。</p>
+                                    <p>按下按鈕後將開啟 LINE，系統已幫您輸入好內容，請直接按下<span className="text-white font-bold">「傳送」</span>即可。</p>
                                 </div>
 
                                 <div className="flex gap-4 pt-2">
