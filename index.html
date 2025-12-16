@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TDS 專業車體美容預約系統</title>
+    <title>TDS 專業車體美容預約系統 | TDS Booking System</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -46,38 +46,112 @@
         const { useState } = React;
 
         const Logo = () => (
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-6">
                 <div className="w-32 h-32 rounded-full border-2 border-white/30 shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center justify-center bg-black overflow-hidden">
                      <img src="TDS Logo.jpg" alt="TDS" className="w-full h-full object-cover" onError={(e) => {e.target.style.display='none'; e.target.parentElement.innerText='TDS Logo'}} />
                 </div>
             </div>
         );
 
+        // 翻譯字典 (UI 文字)
+        const translations = {
+            zh: {
+                subtitle: '專業車體美容・鍍膜諮詢',
+                step1: '服務項目',
+                step2: '車型時間',
+                step3: '確認預約',
+                selectService: '選擇服務項目 (可複選)',
+                addons: '附加選項 Add-ons',
+                nextToTime: '下一步：選擇車型與時間 →',
+                carTypeLabel: '您的愛車種類',
+                dateLabel: '預約日期',
+                timeLabel: '預約時段 (1小時/單位)',
+                selectTimePlaceholder: '請選擇時段',
+                back: '回上一步',
+                nextToConfirm: '下一步：確認資訊',
+                confirmTitle: '預約單確認',
+                carTypeResult: '車型',
+                timeResult: '預約時間',
+                serviceResult: '服務項目',
+                nameLabel: '您的稱呼 (選填)',
+                namePlaceholder: '例如：陳先生 / Mr. Chen',
+                tip: '按下按鈕後將開啟 LINE，系統已幫您輸入好中英對照內容，請直接按下「傳送」即可。',
+                btnModify: '修改',
+                btnSubmit: '聯繫 LINE 預約',
+                serviceDesc: {
+                    wash: '基礎外觀與內裝清潔',
+                    coating: '漆面保護與增艷',
+                    leather: '內裝滋潤與修復',
+                    deep_clean: '除異味、蒸氣殺菌'
+                }
+            },
+            en: {
+                subtitle: 'Professional Auto Detailing & Coating',
+                step1: 'Services',
+                step2: 'Car & Time',
+                step3: 'Confirm',
+                selectService: 'Select Services (Multiple)',
+                addons: 'Add-ons',
+                nextToTime: 'Next: Car & Time →',
+                carTypeLabel: 'Vehicle Type',
+                dateLabel: 'Preferred Date',
+                timeLabel: 'Preferred Time (1hr slots)',
+                selectTimePlaceholder: 'Select a time slot',
+                back: 'Back',
+                nextToConfirm: 'Next: Confirmation',
+                confirmTitle: 'Booking Confirmation',
+                carTypeResult: 'Vehicle',
+                timeResult: 'Time',
+                serviceResult: 'Services',
+                nameLabel: 'Your Name (Optional)',
+                namePlaceholder: 'e.g., Mr. Chen',
+                tip: 'Pressing the button will open LINE with a bilingual message pre-filled. Just press "Send".',
+                btnModify: 'Edit',
+                btnSubmit: 'Book via LINE',
+                serviceDesc: {
+                    wash: 'Exterior & Interior Cleaning',
+                    coating: 'Paint Protection & Gloss',
+                    leather: 'Interior Conditioning',
+                    deep_clean: 'Odor Removal & Steam'
+                }
+            }
+        };
+
         function TDSBookingSystem() {
+            const [lang, setLang] = useState('zh'); // 預設中文 'zh' 或 'en'
             const [step, setStep] = useState(1);
             const [formData, setFormData] = useState({
-                serviceType: [],
-                addons: [],
-                carType: '',
+                serviceType: [], // 存 id
+                addons: [],      // 存 id
+                carType: '',     // 存 id
                 date: '',
                 time: '',
                 name: ''
             });
 
+            const t = translations[lang];
+
+            // 資料結構包含中英雙語
             const services = [
-                { id: 'wash', name: '精緻洗車', icon: '💧', desc: '基礎外觀與內裝清潔' },
-                { id: 'coating', name: '專業鍍膜', icon: '🛡️', desc: '漆面保護與增艷' },
-                { id: 'leather', name: '皮革保養', icon: '✨', desc: '內裝滋潤與修復' },
-                { id: 'deep_clean', name: '深度清潔', icon: '💨', desc: '除異味、蒸氣殺菌' },
+                { id: 'wash', nameZh: '精緻洗車', nameEn: 'Exquisite Wash', icon: '💧', descZh: '基礎外觀與內裝清潔', descEn: 'Exterior & Interior Cleaning' },
+                { id: 'coating', nameZh: '專業鍍膜', nameEn: 'Professional Coating', icon: '🛡️', descZh: '漆面保護與增艷', descEn: 'Paint Protection & Gloss' },
+                { id: 'leather', nameZh: '皮革保養', nameEn: 'Leather Care', icon: '✨', descZh: '內裝滋潤與修復', descEn: 'Interior Conditioning' },
+                { id: 'deep_clean', nameZh: '深度清潔', nameEn: 'Deep Cleaning', icon: '💨', descZh: '除異味、蒸氣殺菌', descEn: 'Odor Removal & Steam' },
             ];
 
             const addons = [
-                { id: 'ac_clean', name: '冷氣管路清潔' },
-                { id: 'wiper', name: '雨刷更換' },
-                { id: 'coating_maintain', name: '鍍膜定期維護' },
+                { id: 'ac_clean', nameZh: '冷氣管路清潔', nameEn: 'A/C Cleaning' },
+                { id: 'wiper', nameZh: '雨刷更換', nameEn: 'Wiper Replacement' },
+                { id: 'coating_maintain', nameZh: '鍍膜定期維護', nameEn: 'Coating Maintenance' },
             ];
 
-            const carTypes = ['小型房車 (Sedan)', '休旅車 (SUV)', '跑車 (Coupe)', '大型休旅/MPV', '機車 (Motorcycle)'];
+            const carTypes = [
+                { id: 'sedan', nameZh: '小型房車 (Sedan)', nameEn: 'Sedan' },
+                { id: 'suv', nameZh: '休旅車 (SUV)', nameEn: 'SUV' },
+                { id: 'coupe', nameZh: '跑車 (Coupe)', nameEn: 'Coupe' },
+                { id: 'mpv', nameZh: '大型休旅/MPV', nameEn: 'Large SUV / MPV' },
+                { id: 'moto', nameZh: '機車 (Motorcycle)', nameEn: 'Motorcycle' },
+            ];
 
             // 產生 10:00 - 20:00 的整點時段
             const generateTimeSlots = () => {
@@ -89,54 +163,97 @@
             };
             const timeSlots = generateTimeSlots();
 
-            const toggleSelection = (category, item) => {
+            // 處理選取 (儲存 ID)
+            const toggleSelection = (category, id) => {
                 setFormData(prev => {
                     const list = prev[category];
-                    if (list.includes(item)) {
-                        return { ...prev, [category]: list.filter(i => i !== item) };
+                    if (list.includes(id)) {
+                        return { ...prev, [category]: list.filter(i => i !== id) };
                     }
-                    return { ...prev, [category]: [...list, item] };
+                    return { ...prev, [category]: [...list, id] };
                 });
             };
 
             const handleNext = () => setStep(prev => prev + 1);
             const handleBack = () => setStep(prev => prev - 1);
 
-            // 🔥 核心修正：使用 LINE URL Scheme 直接帶入文字
+            // 🔥 核心功能：產生中英對照的訊息
             const handleLineSubmit = () => {
+                // 1. 轉換車型名稱
+                const selectedCar = carTypes.find(c => c.id === formData.carType);
+                const carStr = selectedCar ? `${selectedCar.nameZh} / ${selectedCar.nameEn}` : '未選擇';
+
+                // 2. 轉換服務名稱
+                const serviceStr = formData.serviceType.map(sid => {
+                    const s = services.find(item => item.id === sid);
+                    return s ? `${s.nameZh} (${s.nameEn})` : '';
+                }).join(', ');
+
+                // 3. 轉換附加服務
+                const addonStr = formData.addons.length > 0 
+                    ? formData.addons.map(aid => {
+                        const a = addons.find(item => item.id === aid);
+                        return a ? `${a.nameZh} (${a.nameEn})` : '';
+                      }).join(', ')
+                    : '無 / None';
+
+                // 4. 組合最終雙語訊息
                 const message = `
-【TDS 預約諮詢單】
-👤 顧客：${formData.name || '未填寫'}
-🚗 車型：${formData.carType}
-📅 日期：${formData.date}
-⏰ 時間：${formData.time}
-🛠 服務項目：${formData.serviceType.join(', ')}
-➕ 附加服務：${formData.addons.length > 0 ? formData.addons.join(', ') : '無'}
+【TDS 預約諮詢 | Booking Inquiry】
 -----------------------
-請問此時段是否可以預約？`.trim();
+👤 顧客 (Name): ${formData.name || '未填寫 / Not provided'}
+🚗 車型 (Vehicle): ${carStr}
+📅 日期 (Date): ${formData.date}
+⏰ 時間 (Time): ${formData.time}
 
-                // 1. 嘗試複製到剪貼簿 (當作備用方案，不顯示 Alert 打斷流程)
+🛠 服務項目 (Services):
+${serviceStr}
+
+➕ 附加服務 (Add-ons):
+${addonStr}
+-----------------------
+請問此時段是否可以預約？
+Is this slot available?`.trim();
+
+                // 複製 + 跳轉
                 navigator.clipboard.writeText(message).catch(() => {});
-
-                // 2. 將文字編碼，準備放入網址
                 const encodedMessage = encodeURIComponent(message);
-
-                // 3. 使用官方帳號專用帶入文字連結
-                // 格式：https://line.me/R/oaMessage/{LINE_ID}/?{message}
                 const lineUrl = `https://line.me/R/oaMessage/@794xqwdg/?${encodedMessage}`;
-
-                // 4. 跳轉
                 window.location.href = lineUrl;
             };
 
+            // 輔助函式：根據目前語言取得顯示名稱
+            const getServiceName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
+            const getServiceDesc = (item) => lang === 'zh' ? item.descZh : item.descEn;
+            const getAddonName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
+            const getCarName = (item) => lang === 'zh' ? item.nameZh : item.nameEn;
+
             return (
                 <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-white selection:text-black pb-10">
-                    <div className="max-w-2xl mx-auto px-6 py-12">
+                    <div className="max-w-2xl mx-auto px-6 py-8">
                         
+                        {/* 語言切換按鈕 */}
+                        <div className="flex justify-end mb-4">
+                            <div className="bg-[#1e1e1e] border border-gray-600 rounded-full p-1 flex">
+                                <button 
+                                    onClick={() => setLang('zh')}
+                                    className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'zh' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                                >
+                                    中文
+                                </button>
+                                <button 
+                                    onClick={() => setLang('en')}
+                                    className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${lang === 'en' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'}`}
+                                >
+                                    EN
+                                </button>
+                            </div>
+                        </div>
+
                         <Logo />
                         <div className="text-center mb-10">
                             <h1 className="text-3xl font-bold tracking-wider mb-2 text-white">TDS (The Detail Studio)</h1>
-                            <p className="text-gray-300 text-sm tracking-widest uppercase font-medium">專業車體美容・鍍膜諮詢</p>
+                            <p className="text-gray-300 text-sm tracking-widest uppercase font-medium">{t.subtitle}</p>
                         </div>
 
                         {/* 進度條 */}
@@ -148,26 +265,32 @@
                                 </div>
                             ))}
                         </div>
+                        {/* 進度文字標籤 */}
+                        <div className="flex justify-between text-xs text-gray-500 px-1 -mt-8 mb-8">
+                            <span>{t.step1}</span>
+                            <span>{t.step2}</span>
+                            <span>{t.step3}</span>
+                        </div>
 
                         {/* Step 1 */}
                         {step === 1 && (
                             <div className="space-y-6 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">選擇服務項目 (可複選)</h2>
+                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.selectService}</h2>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {services.map((service) => (
                                         <div 
                                             key={service.id}
-                                            onClick={() => toggleSelection('serviceType', service.name)}
+                                            onClick={() => toggleSelection('serviceType', service.id)}
                                             className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 flex items-center gap-4 group
-                                                ${formData.serviceType.includes(service.name) 
+                                                ${formData.serviceType.includes(service.id) 
                                                     ? 'border-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)]' 
                                                     : 'border-gray-600 hover:border-gray-400 bg-[#1e1e1e]'}`}
                                         >
                                             <div className="text-3xl">{service.icon}</div>
                                             <div>
-                                                <h3 className="font-bold text-lg text-white">{service.name}</h3>
-                                                <p className="text-sm text-gray-300">{service.desc}</p>
+                                                <h3 className="font-bold text-lg text-white">{getServiceName(service)}</h3>
+                                                <p className="text-sm text-gray-300">{getServiceDesc(service)}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -176,19 +299,19 @@
                                 <div className="mt-8">
                                     <h3 className="text-sm text-gray-300 font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
                                         <span className="w-2 h-2 bg-white rounded-full inline-block"></span>
-                                        附加選項 Add-ons
+                                        {t.addons}
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
                                         {addons.map((addon) => (
                                             <button
                                                 key={addon.id}
-                                                onClick={() => toggleSelection('addons', addon.name)}
+                                                onClick={() => toggleSelection('addons', addon.id)}
                                                 className={`px-5 py-3 rounded-full text-sm font-medium border-2 transition-all
-                                                    ${formData.addons.includes(addon.name)
+                                                    ${formData.addons.includes(addon.id)
                                                         ? 'bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.3)]'
                                                         : 'bg-transparent text-gray-300 border-gray-600 hover:border-gray-400'}`}
                                             >
-                                                + {addon.name}
+                                                + {getAddonName(addon)}
                                             </button>
                                         ))}
                                     </div>
@@ -199,7 +322,7 @@
                                     disabled={formData.serviceType.length === 0}
                                     className="w-full mt-10 bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-gray-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_5px_15px_rgba(255,255,255,0.1)]"
                                 >
-                                    下一步：選擇車型與時間 →
+                                    {t.nextToTime}
                                 </button>
                             </div>
                         )}
@@ -207,21 +330,21 @@
                         {/* Step 2 */}
                         {step === 2 && (
                             <div className="space-y-8 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">車型與預約時間</h2>
+                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.step2}</h2>
 
                                 <div className="space-y-4">
-                                    <label className="block text-gray-300 text-sm font-bold">您的愛車種類</label>
+                                    <label className="block text-gray-300 text-sm font-bold">{t.carTypeLabel}</label>
                                     <div className="grid grid-cols-2 gap-3">
                                         {carTypes.map((type) => (
                                             <button
-                                                key={type}
-                                                onClick={() => setFormData({...formData, carType: type})}
+                                                key={type.id}
+                                                onClick={() => setFormData({...formData, carType: type.id})}
                                                 className={`p-4 text-sm font-medium rounded-lg border-2 text-left transition-all
-                                                    ${formData.carType === type 
+                                                    ${formData.carType === type.id 
                                                         ? 'border-white bg-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]' 
                                                         : 'border-gray-600 text-gray-300 hover:border-gray-400 bg-[#1e1e1e]'}`}
                                             >
-                                                {type}
+                                                {getCarName(type)}
                                             </button>
                                         ))}
                                     </div>
@@ -229,7 +352,7 @@
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-gray-300 text-sm font-bold mb-3">預約日期</label>
+                                        <label className="block text-gray-300 text-sm font-bold mb-3">{t.dateLabel}</label>
                                         <input 
                                             type="date" 
                                             className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-4 text-white focus:border-white outline-none cursor-pointer appearance-none"
@@ -238,13 +361,13 @@
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-gray-300 text-sm font-bold mb-3">預約時段 (1小時/單位)</label>
+                                        <label className="block text-gray-300 text-sm font-bold mb-3">{t.timeLabel}</label>
                                         <select 
                                             className="w-full bg-[#1e1e1e] border-2 border-gray-600 rounded-xl p-4 text-white focus:border-white outline-none appearance-none cursor-pointer"
                                             onChange={(e) => setFormData({...formData, time: e.target.value})}
                                             value={formData.time}
                                         >
-                                            <option value="">請選擇時段</option>
+                                            <option value="">{t.selectTimePlaceholder}</option>
                                             {timeSlots.map(time => (
                                                 <option key={time} value={time}>{time}</option>
                                             ))}
@@ -253,13 +376,13 @@
                                 </div>
                                 
                                 <div className="pt-6 flex gap-4">
-                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">回上一步</button>
+                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">{t.back}</button>
                                     <button 
                                         onClick={handleNext}
                                         disabled={!formData.carType || !formData.date || !formData.time}
                                         className="w-2/3 bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-gray-200 disabled:opacity-40 shadow-[0_5px_15px_rgba(255,255,255,0.1)]"
                                     >
-                                        下一步：確認資訊
+                                        {t.nextToConfirm}
                                     </button>
                                 </div>
                             </div>
@@ -268,30 +391,38 @@
                         {/* Step 3 */}
                         {step === 3 && (
                             <div className="space-y-6 fade-in">
-                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">預約單確認</h2>
+                                <h2 className="text-xl font-bold border-l-4 border-white pl-4 text-white">{t.confirmTitle}</h2>
                                 
                                 <div className="bg-[#1e1e1e] p-6 rounded-2xl border-2 border-gray-700 space-y-5">
                                     <div className="flex justify-between items-center border-b border-gray-700 pb-4">
-                                        <span className="text-gray-400">車型</span>
-                                        <span className="font-bold text-xl text-white">{formData.carType}</span>
+                                        <span className="text-gray-400">{t.carTypeResult}</span>
+                                        <span className="font-bold text-xl text-white">
+                                            {carTypes.find(c => c.id === formData.carType) ? getCarName(carTypes.find(c => c.id === formData.carType)) : ''}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between items-center border-b border-gray-700 pb-4">
-                                        <span className="text-gray-400">預約時間</span>
+                                        <span className="text-gray-400">{t.timeResult}</span>
                                         <span className="font-bold text-lg text-white">{formData.date} <span className="text-yellow-400 mx-1">|</span> {formData.time}</span>
                                     </div>
                                     <div>
-                                        <span className="text-gray-400 block mb-3">服務項目</span>
+                                        <span className="text-gray-400 block mb-3">{t.serviceResult}</span>
                                         <div className="flex flex-wrap gap-2">
-                                            {formData.serviceType.map(s => <span key={s} className="bg-white text-black px-3 py-1 rounded-lg font-bold text-sm">{s}</span>)}
-                                            {formData.addons.map(a => <span key={a} className="border border-white/50 px-3 py-1 rounded-lg text-sm text-gray-200">+ {a}</span>)}
+                                            {formData.serviceType.map(sid => {
+                                                const s = services.find(item => item.id === sid);
+                                                return s ? <span key={sid} className="bg-white text-black px-3 py-1 rounded-lg font-bold text-sm">{getServiceName(s)}</span> : null;
+                                            })}
+                                            {formData.addons.map(aid => {
+                                                const a = addons.find(item => item.id === aid);
+                                                return a ? <span key={aid} className="border border-white/50 px-3 py-1 rounded-lg text-sm text-gray-200">+ {getAddonName(a)}</span> : null;
+                                            })}
                                         </div>
                                     </div>
                                     
                                     <div className="pt-2">
-                                        <label className="block text-gray-300 text-sm font-bold mb-2">您的稱呼 (選填)</label>
+                                        <label className="block text-gray-300 text-sm font-bold mb-2">{t.nameLabel}</label>
                                         <input 
                                             type="text" 
-                                            placeholder="例如：陳先生"
+                                            placeholder={t.namePlaceholder}
                                             className="w-full bg-black border-2 border-gray-600 rounded-xl p-3 text-white focus:border-white outline-none"
                                             onChange={(e) => setFormData({...formData, name: e.target.value})}
                                         />
@@ -300,16 +431,16 @@
 
                                 <div className="bg-green-900/30 border border-green-700/50 p-4 rounded-xl text-sm text-green-300 flex gap-3 items-start">
                                     <div className="mt-0.5 text-lg">💡</div>
-                                    <p>按下按鈕後將開啟 LINE，系統已幫您輸入好內容，請直接按下<span className="text-white font-bold">「傳送」</span>即可。</p>
+                                    <p>{t.tip}</p>
                                 </div>
 
                                 <div className="flex gap-4 pt-2">
-                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">修改</button>
+                                    <button onClick={handleBack} className="w-1/3 py-4 rounded-xl border-2 border-gray-600 text-gray-300 hover:border-gray-400 font-bold">{t.btnModify}</button>
                                     <button 
                                         onClick={handleLineSubmit}
                                         className="w-2/3 bg-[#00B900] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#009900] transition-colors shadow-[0_0_25px_rgba(0,185,0,0.4)] flex justify-center items-center gap-2"
                                     >
-                                        聯繫 LINE 預約
+                                        {t.btnSubmit}
                                     </button>
                                 </div>
                             </div>
